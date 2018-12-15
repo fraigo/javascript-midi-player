@@ -18,9 +18,9 @@ You can download the files and directy include in your project:
 Using the online version:
 
 ```html
-<script src='WebAudioFontPlayer.js'></script>
-<script src='MIDIFile.js'></script>
-<script src='MIDIPlayer.js'></script>
+<script src='https://fraigo.github.io/javascript-midi-player/midiplayer/WebAudioFontPlayer.js'></script>
+<script src='https://fraigo.github.io/javascript-midi-player/midiplayer/MIDIFile.js'></script>
+<script src='https://fraigo.github.io/javascript-midi-player/midiplayer/MIDIPlayer.js'></script>
 ```
 
 ###  Basic usage 
@@ -87,6 +87,6 @@ Returns the current playback time (in seconds).
 
 ### Online Demo
 
-https://fraigo.github.io/javascript-midi-player/midiplayer/
+See [https://fraigo.github.io/javascript-midi-player/midiplayer/](https://fraigo.github.io/javascript-midi-player/midiplayer/)
 
 
