@@ -3,11 +3,18 @@
 * A Javascript Library to Play MIDI files in a web site using the WebMIDIAPI.
 * Based on the project WebAudioFont https://github.com/surikov/webaudiofont by Sergey Surikov.
 
+
+
+## Online Demo
+
+See [https://fraigo.github.io/javascript-midi-player/midiplayer/](https://fraigo.github.io/javascript-midi-player/midiplayer/)
+
+
 ## Usage
 
 ### Include the Javascript Libraries. 
 
-You can download the files and directy include in your project:
+You can download the Javascript files and directly include in your project:
 
 ```html
 <script src='WebAudioFontPlayer.js'></script>
@@ -15,7 +22,7 @@ You can download the files and directy include in your project:
 <script src='MIDIPlayer.js'></script>
 ```
 
-Using the online version:
+ALso, using the online version:
 
 ```html
 <script src='https://fraigo.github.io/javascript-midi-player/midiplayer/WebAudioFontPlayer.js'></script>
@@ -85,8 +92,6 @@ Returns the current playback time (in seconds).
 
 
 
-### Online Demo
 
-See [https://fraigo.github.io/javascript-midi-player/midiplayer/](https://fraigo.github.io/javascript-midi-player/midiplayer/)
 
 
