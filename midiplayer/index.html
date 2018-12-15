@@ -1,0 +1,49 @@
+<html>
+<head>
+	<!--
+	<script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'></script>
+	-->
+	<script src='WebAudioFontPlayer.js'></script>
+    <script src='MIDIFile.js'></script>
+    <script src='MIDIPlayer.js'></script>
+</head>
+<body>
+	<div id='cntls'>
+		<p>
+			<input type="file" id="filesinput" name="filesarr[]" accept=".mid,.midi,.kar"/>
+			<button type="button" onclick="player.play()">Play</button>
+			<button type="button" onclick="player.pause()">Pause</button>
+			<button type="button" onclick="player.stop()">Stop</button>
+			<input id="position" type="range" min="0" max="100" value="0">
+		</p>
+	</div>
+	<script>
+    
+	// create the player object using a file input by id or DOM Element
+	player=new MIDIPlayer('filesinput');
+	// register the onload function to start playing
+	player.onload = function(song){
+		player.play();
+		var pos= document.getElementById("position");
+		pos.setAttribute("max",song.duration);
+	}
+	// the tick event is triggered in every position change
+	player.ontick=function(song,position){
+		var pos= document.getElementById("position");
+		pos.value=position;
+	}
+	// stop playing when the window is unfocused
+	window.onblur=function(){
+		console.log("Blur", new Date())
+		player.pause();
+	}
+	// resume playing when window is in focus
+	window.onfocus=function(){
+		console.log("Focus", new Date())
+		player.play();
+	}
+        
+	</script>
+</body>
+
+</html>
