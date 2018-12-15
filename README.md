@@ -87,6 +87,6 @@ Returns the current playback time (in seconds).
 
 ### Online Demo
 
-https://fraigo.github.io/javascript-midi-player/example/index.html
+https://fraigo.github.io/javascript-midi-player/midiplayer/
 
 
