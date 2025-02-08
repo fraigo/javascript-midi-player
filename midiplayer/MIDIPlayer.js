@@ -223,6 +223,16 @@ function MIDIPlayer(fileinput,onload) {
         };
         fileReader.readAsArrayBuffer(file);
     }
+    this.handleBlob = function(blob) {
+        var self=this;
+        var fileReader = new FileReader();
+        fileReader.onload = function (event ) {
+            console.log(event);
+            var fileObj = event.target.result;
+            self.openFile(fileObj);
+        };
+        fileReader.readAsArrayBuffer(blob);
+    }    
     this.handleExample=function(path) {
         console.log(path);
         var xmlHttpRequest = new XMLHttpRequest();
@@ -241,8 +251,12 @@ function MIDIPlayer(fileinput,onload) {
         fileinput=document.getElementById(fileinput)
     }
     if (fileinput){
-        
-        fileinput.addEventListener('change', this.handleFileSelect.bind(this), false);
+        if (typeof(fileinput)=="object"){
+            // file is a blob
+            fileinput.addEventListener('change', this.handleBlob.bind(this), false);
+        } else {
+            fileinput.addEventListener('change', this.handleFileSelect.bind(this), false);
+        }  
     }	
 
 }
