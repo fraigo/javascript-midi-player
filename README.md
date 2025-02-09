@@ -22,7 +22,7 @@ You can download the Javascript files and directly include in your project:
 <script src='MIDIPlayer.js'></script>
 ```
 
-ALso, using the online version:
+Also, using the online version:
 
 ```html
 <script src='https://fraigo.github.io/javascript-midi-player/midiplayer/WebAudioFontPlayer.js'></script>
@@ -32,30 +32,54 @@ ALso, using the online version:
 
 ###  Basic usage 
 
-```javascript
+```html
+<html>
+    <head>
+        <script src='https://fraigo.github.io/javascript-midi-player/midiplayer/WebAudioFontPlayer.js'></script>
+<script src='https://fraigo.github.io/javascript-midi-player/midiplayer/MIDIFile.js'></script>
+<script src='https://fraigo.github.io/javascript-midi-player/midiplayer/MIDIPlayer.js'></script>
+    </head>
+    <body>
+        <div id='cntls'>
+            <p>
+                <input type="file" id="filesinput" name="filesarr[]" accept=".mid,.midi,.kar"/>
+                <button type="button" onclick="player.play()">Play</button>
+                <button type="button" onclick="player.pause()">Pause</button>
+                <button type="button" onclick="player.stop()">Stop</button>
+                <input id="position" type="range" min="0" max="100" value="0">
+                <input type="checkbox" id="autoplay" checked onchange="autoplay=this.checked">Autoplay
+            </p>
+        </div>
+        <script>
+// autoplay flag
+var autoplay=true;
 // create the player object using a file input by id or DOM Element
-player=new MIDIPlayer('filesinput');
+var player=new MIDIPlayer('filesinput');
 // register the onload function to start playing
 player.onload = function(song){
-    player.play();
+    if (autoplay){
+        player.play();
+    }
     var pos= document.getElementById("position");
-    pos.setAttribute("max",song.duration);
+    pos.setAttribute("max",Math.round(song.duration*10));
 }
 // the tick event is triggered in every position change
 player.ontick=function(song,position){
     var pos= document.getElementById("position");
-    pos.value=position;
+    pos.value=Math.round(position*10);
+}
+// the end event is triggered when the song ends
+player.onend=function(){
+    console.log("End", new Date())
 }
 // stop playing when the window is unfocused
 window.onblur=function(){
     console.log("Blur", new Date())
     player.pause();
 }
-// resume playing when window is in focus
-window.onfocus=function(){
-    console.log("Focus", new Date())
-    player.play();
-}
+        <script>
+    </body>
+</html>
 ```
 
 ## MIDIPlayer reference

@@ -22,9 +22,17 @@ function MIDIPlayer(fileinput,onload) {
     this.STOPPED = "stopped";
     this.PLAYING = "playing";
     this.PAUSED = "paused";
+
+    this.debug = true
+    // autoReplay is a boolean that indicates if the song should be replayed after it ends
+    this.autoReplay = true;
+    // ontick is a function that is called every time the song advances
+    this.ontick = null;
+    // onend is a function that is called when the song ends
+    this.onend = null;
     
     this.log=function(msg, extra){
-        console.log(msg,extra);
+        if (this.debug) console.log(msg,extra);
     }
 
     this.play =function() {
@@ -46,7 +54,7 @@ function MIDIPlayer(fileinput,onload) {
     this.pause=function(){
         if (loadedsong) {
             lastPosition=this.getPosition();
-            console.log("Position",lastPosition);
+            this.log("Paused position",lastPosition);
             this.stop();
             currentSongTime = lastPosition;
             this.state = this.PAUSED;
@@ -54,6 +62,7 @@ function MIDIPlayer(fileinput,onload) {
     }
     this.stop=function(){
         if (loadedsong) {
+            this.log("Stop");
             player.cancelQueue(audioContext);
             songStart = 0;
             currentSongTime = 0;
@@ -79,9 +88,21 @@ function MIDIPlayer(fileinput,onload) {
             currentSongTime = currentSongTime + stepDuration;
             nextStepTime = nextStepTime + stepDuration;
             if (currentSongTime > song.duration) {
-                currentSongTime = currentSongTime - song.duration;
-                this.sendNotes(song, songStart, 0, currentSongTime, audioContext, input, player);
-                songStart = songStart + song.duration;
+                this.log("End of song");
+                if (this.onend && typeof(this.onend)=="function"){
+                    this.onend(loadedsong);
+                }
+                if (this.autoReplay){
+                    currentSongTime = currentSongTime - song.duration;
+                    this.sendNotes(song, songStart, 0, currentSongTime, audioContext, input, player);
+                    songStart = songStart + song.duration;   
+                } else {
+                    if (this.ontick && typeof(this.ontick)=="function") {
+                        this.ontick(loadedsong,song.duration);
+                    }
+                    this.stop();
+                    return;    
+                }
             }
         }
         if (nextPositionTime < audioContext.currentTime) {
@@ -89,7 +110,7 @@ function MIDIPlayer(fileinput,onload) {
             this.duration = song.duration;
             nextPositionTime = audioContext.currentTime + 3;
         }
-        if (this.ontick){
+        if (this.ontick && typeof(this.ontick)=="function") {
             this.ontick(loadedsong,currentSongTime);
         }
         window.requestAnimationFrame(function (t) {
@@ -128,7 +149,7 @@ function MIDIPlayer(fileinput,onload) {
         }
     }
     this.startLoad=function(song) {
-        console.log(song);
+        this.log('startLoad',song);
         var AudioContextFunc = window.AudioContext || window.webkitAudioContext;
         audioContext = new AudioContextFunc();
         player = new WebAudioFontPlayer();
@@ -157,7 +178,6 @@ function MIDIPlayer(fileinput,onload) {
         return loadedsong;
     }
     this.getPosition=function(){
-        //console.log(currentSongTime);
         return currentSongTime;
     }
     this.setPosition=function(position){
@@ -169,38 +189,44 @@ function MIDIPlayer(fileinput,onload) {
             lastPosition = currentSongTime;
         }
     }
-    this.setVolume=function(volume){
-        if (loadedsong){
+    this.setVolume=function(volume,track){
+        if (loadedsong && loadedsong.tracks[track]){
             player.cancelQueue(audioContext);
             var v = volume / 100;
             if (v < 0.000001) {
                 v = 0.000001;
             }
-            loadedsong.tracks[i].volume = v;
-        } 
+            loadedsong.tracks[track].volume = v;
+        } else {
+            this.log("setVolume: Track not found",track);
+        }
     }
-    this.setInstrument=function(value){
-        if (loadedsong){
+    this.setInstrument=function(value, track){
+        if (loadedsong && loadedsong.tracks[track]){
             var nn = value;
             var info = player.loader.instrumentInfo(nn);
+            var self = this
             player.loader.startLoad(audioContext, info.url, info.variable);
             player.loader.waitLoad(function () {
-                console.log('loaded');
-                loadedsong.tracks[i].info = info;
-                loadedsong.tracks[i].id = nn;
+                self.log("instrument loaded", info);
+                loadedsong.tracks[track].info = info;
+                loadedsong.tracks[track].id = nn;
             });
+        } else {
+            this.log("setInstrument: Track not found",track);
         }
     }
     this.loadSong=function(song) {
         this.stop();
         audioContext.resume();
 
-        console.log("Tracks",song.tracks);
-        console.log("Beats",song.beats);
-        console.log("Duration", song.duration);
-        console.log("Instruments", player.loader.instrumentKeys());
-        console.log("Drums", player.loader.drumKeys());
+        this.log("Tracks",song.tracks);
+        this.log("Beats",song.beats);
+        this.log("Duration", song.duration);
+        // this.log("Instruments", player.loader.instrumentKeys());
+        // this.log("Drums", player.loader.drumKeys());
         loadedsong = song;
+        this.log("Song loaded",loadedsong);
         if (this.onload){
             this.onload(song)
         }
@@ -212,19 +238,19 @@ function MIDIPlayer(fileinput,onload) {
     }
     this.handleFileSelect=function(event) {
         var self=this;
-        console.log(event);
+        this.log('fileSelect',event);
         var file = event.target.files[0];
-        console.log(file);
+        this.log('file',file);
         var fileReader = new FileReader();
         fileReader.onload = function (event ) {
-            console.log(event);
+            self.log('loaded',event);
             var fileObj = event.target.result;
             self.openFile(fileObj);
         };
         fileReader.readAsArrayBuffer(file);
     }
     this.handleExample=function(path) {
-        console.log(path);
+        this.log('example',path);
         var xmlHttpRequest = new XMLHttpRequest();
         xmlHttpRequest.open("GET", path, true);
         xmlHttpRequest.responseType = "arraybuffer";
