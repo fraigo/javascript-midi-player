@@ -1,6 +1,6 @@
 
 
-function MIDIPlayer(fileinput,onload) {
+function MIDIPlayer(source,onload) {
     
     var audioContext = null;
     var player = null;
@@ -215,13 +215,7 @@ function MIDIPlayer(fileinput,onload) {
         console.log(event);
         var file = event.target.files[0];
         console.log(file);
-        var fileReader = new FileReader();
-        fileReader.onload = function (event ) {
-            console.log(event);
-            var fileObj = event.target.result;
-            self.openFile(fileObj);
-        };
-        fileReader.readAsArrayBuffer(file);
+        this.handleBlob(file);
     }
     this.handleBlob = function(blob) {
         var self=this;
@@ -247,15 +241,13 @@ function MIDIPlayer(fileinput,onload) {
         xmlHttpRequest.send(null);
     }
 
-    if (typeof(fileinput)=="string"){
-        fileinput=document.getElementById(fileinput)
-    }
-    if (fileinput){
-        if (typeof(fileinput)=="object"){
-            // file is a blob
-            fileinput.addEventListener('change', this.handleBlob.bind(this), false);
+    if (source){
+        if (typeof(source)=="string" && document.getElementById(source)){
+            source=document.getElementById(source)
+        }  else if (source instanceof Blob){
+            source.addEventListener('change', this.handleBlob.bind(this), false);
         } else {
-            fileinput.addEventListener('change', this.handleFileSelect.bind(this), false);
+            source.addEventListener('change', this.handleFileSelect.bind(this), false);
         }  
     }	
 
