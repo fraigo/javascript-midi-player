@@ -111,9 +111,12 @@ window.onblur=function(){
 
 ## MIDIPlayer reference
 
-**new MIDIPlayer(fileInput)**
+**new MIDIPlayer(source)**
 
-Create a new MIDIPlayer object. You can use the file input id or a file input DOM element.
+Create a new MIDIPlayer object. You can use:
+    * A file input id or a file input DOM element reference
+    * A file/blob reference
+    * An URL (must pass CORS policy for external domains)
 
 **MIDIPlayer.play()**
 
@@ -131,14 +134,24 @@ Stops playback.
 
 Sets the current position (in seconds). 
 
-**MIDIPlayer.setVolume(vol)**
+**MIDIPlayer.setVolume(vol,track)**
 
-Sets the current volume (0-100). 
+Sets the current volume (0-100) of a track.
 
 
 **[float] MIDIPlayer.getPosition()**
 
-Returns the current playback time (in seconds).
+Returns the current playback time (in decimal seconds).
+
+** MIDIPLayer.onload(song)**
+To handle song load. You can use .play() after this event
+
+** MIDIPLayer.ontick(song, position)**
+To handle every song tick. You can use it to monitor playback and current position.
+
+** MIDIPLayer.onend(song)**
+To handle song playback end.
+
 
 
 
