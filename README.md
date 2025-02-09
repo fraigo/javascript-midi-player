@@ -32,6 +32,33 @@ Also, using the online version:
 
 ###  Basic usage 
 
+Load from different sources
+
+```js
+var fileInputPlayer = new MIDIPlayer('filesinput'); // fileinput id
+var blobPlayer = new MidiPLayer(fileInput.files[0]) // load file/blob
+var httpPlayer = new MidiPLayer("songs/song1.mid") // load from URL (for crossdomain files, must pass CORS policy)
+```
+
+Options
+
+* `.autoReplay` (boolean) to enable/disable playback loop (Default:`true`)
+* `.debug` (boolean) to enable/disable debug messages (Default:`true`)
+
+Playback:
+
+* `.play()` to start playing in the current position
+* `.pause()` to pause at the current position
+* `.stop()` to stop playback and reset to initial position
+
+Events
+
+* `.onload(song)` to handle loading files (eg: to start playing)
+* `.ontick(song,position)` to monitor playing (position in decimal seconds)
+* `.onend(song)` to detect the ending of playback
+
+### Basic Example
+
 ```html
 <html>
     <head>
