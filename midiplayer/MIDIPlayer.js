@@ -1,6 +1,6 @@
 
 
-function MIDIPlayer(fileinput,onload) {
+function MIDIPlayer(source,onload) {
     
     var audioContext = null;
     var player = null;
@@ -241,16 +241,20 @@ function MIDIPlayer(fileinput,onload) {
         this.log('fileSelect',event);
         var file = event.target.files[0];
         this.log('file',file);
+        this.handleBlob(file);
+    }
+    this.handleBlob = function(blob) {
+        var self=this;
         var fileReader = new FileReader();
         fileReader.onload = function (event ) {
             self.log('loaded',event);
             var fileObj = event.target.result;
             self.openFile(fileObj);
         };
-        fileReader.readAsArrayBuffer(file);
+        fileReader.readAsArrayBuffer(blob);
     }
-    this.handleExample=function(path) {
-        this.log('example',path);
+    this.handleURL=function(path) {
+        this.log('load URL',path);
         var xmlHttpRequest = new XMLHttpRequest();
         xmlHttpRequest.open("GET", path, true);
         xmlHttpRequest.responseType = "arraybuffer";
@@ -262,13 +266,21 @@ function MIDIPlayer(fileinput,onload) {
         };
         xmlHttpRequest.send(null);
     }
+    
 
-    if (typeof(fileinput)=="string"){
-        fileinput=document.getElementById(fileinput)
-    }
-    if (fileinput){
-        
-        fileinput.addEventListener('change', this.handleFileSelect.bind(this), false);
+    if (source){
+        if (typeof(source)=="string" && document.getElementById(source)){
+            source=document.getElementById(source)
+        }
+        if (source instanceof HTMLInputElement){
+            source.addEventListener('change', this.handleFileSelect.bind(this), false);
+        }  else if (source instanceof Blob){
+            source.addEventListener('change', this.handleBlob.bind(this), false);
+        } else {
+            // fallback to read from URL 
+            // Note: cross domain requests must pass CORS policy
+            this.handleURL(source);
+        }  
     }	
 
 }
